@@ -19,8 +19,8 @@
     async function uploadToGitHub(content) {
       const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`;
 
-      // GitHub Actions에서 토큰 참조 (보안 문제 해결)
-      const token = prompt("Enter your GitHub Token:"); // 테스트용 (개발 시만 사용)
+      // GitHub Actions에서 토큰 참조 (보안 처리됨)
+      const token = process.env.GH_TOKEN; // GitHub Actions에서 환경 변수 사용
 
       const response = await fetch(url, {
         method: "PUT",
