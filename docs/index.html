@@ -2,41 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>JSON Uploader and Downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Upload Test</title>
 </head>
 <body>
-  <h1>JSON Uploader and Downloader</h1>
+  <h1>JSON Upload Test</h1>
   <input type="file" id="uploadFile" />
   <button id="uploadBtn">Upload</button>
-  <button id="downloadBtn">Download</button>
 
   <script>
-    // 업로드 기능
-    document.getElementById("uploadBtn").addEventListener("click", () => {
+    // GitHub Repository 설정
+    const GITHUB_USERNAME = "k-min9"; // 사용자명
+    const REPO_NAME = "json-data-hosting";           // 저장소명
+    const FILE_PATH = "data/upload.json";    // 저장 경로
+
+    async function uploadToGitHub(content) {
+      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`;
+
+      // GitHub Actions에서 토큰 참조 (보안 문제 해결)
+      const token = prompt("Enter your GitHub Token:"); // 테스트용 (개발 시만 사용)
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "Upload JSON file",
+          content: btoa(unescape(encodeURIComponent(content))), // Base64 인코딩
+        }),
+      });
+
+      if (response.ok) {
+        alert("File uploaded successfully!");
+      } else {
+        alert("Upload failed! " + (await response.json()).message);
+      }
+    }
+
+    // 업로드 버튼 동작
+    document.getElementById("uploadBtn").addEventListener("click", async () => {
       const fileInput = document.getElementById("uploadFile");
       const file = fileInput.files[0];
 
       if (file) {
         const reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = async function (e) {
           const jsonData = e.target.result;
-          console.log("Uploaded JSON:", JSON.parse(jsonData)); // 콘솔 확인
-          alert("File Uploaded Successfully!");
+          await uploadToGitHub(jsonData);
         };
         reader.readAsText(file);
       } else {
         alert("Please select a file!");
       }
-    });
-
-    // 다운로드 기능
-    document.getElementById("downloadBtn").addEventListener("click", () => {
-      const sampleData = { message: "Hello, World!" };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sampleData));
-      const downloadAnchor = document.createElement("a");
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "sample.json");
-      downloadAnchor.click();
     });
   </script>
 </body>
