@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JSON Uploader and Downloader</title>
+</head>
+<body>
+  <h1>JSON Uploader and Downloader</h1>
+  <input type="file" id="uploadFile" />
+  <button id="uploadBtn">Upload</button>
+  <button id="downloadBtn">Download</button>
+
+  <script>
+    // 업로드 기능
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      const fileInput = document.getElementById("uploadFile");
+      const file = fileInput.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const jsonData = e.target.result;
+          console.log("Uploaded JSON:", JSON.parse(jsonData)); // 콘솔 확인
+          alert("File Uploaded Successfully!");
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Please select a file!");
+      }
+    });
+
+    // 다운로드 기능
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const sampleData = { message: "Hello, World!" };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sampleData));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "sample.json");
+      downloadAnchor.click();
+    });
+  </script>
+</body>
+</html>
